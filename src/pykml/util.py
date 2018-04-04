@@ -56,7 +56,7 @@ def wrap_angle180(angle):
         return ((angle+180) % 360 ) - 180
 
 def to_wkt_list(doc):
-    '''converts all geometries to Well Known Text format'''
+    '''converts all geometries to Well Know Text format'''
     from lxml import etree
     
     def ring_coords_to_wkt(ring):
@@ -68,7 +68,10 @@ def to_wkt_list(doc):
         )
     
     ring_wkt_list = []
-    context = etree.iterwalk(doc, events=("start",))
+    context = etree.iterwalk(
+             doc,
+             events=("start",)
+    )
     for action, elem in context:
         if elem.tag in ['{http://www.opengis.net/kml/2.2}Polygon',
                         '{http://www.opengis.net/kml/2.2}MultiPolygon']:

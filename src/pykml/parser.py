@@ -39,34 +39,31 @@ class Schema():
         """
         return self.schema.assertValid(doc)
 
-def _parse_internal(source, parse_func, schema=None, parser_options=None):
-    _parser_options = {
-        'strip_cdata' : False,
-    }
-    if parser_options:
-        _parser_options.update(parser_options)
-
-    if schema:
-        _parser_options['schema'] = schema.schema
-
-    parser = objectify.makeparser(**_parser_options)
-    return parse_func(source, parser=parser)
-
-def fromstring(text, schema=None, parser_options=None):
+def fromstring(text, schema=None):
     """Parses a KML text string
     
     This function parses a KML text string and optionally validates it against 
     a provided schema object"""
+    if schema:
+        parser = objectify.makeparser(schema = schema.schema)
+        return objectify.fromstring(text, parser=parser)
+    else:
+        return objectify.fromstring(text)
 
-    return _parse_internal(text, objectify.fromstring, schema, parser_options)
-
-def parse(fileobject, schema=None, parser_options=None):
+def parse(fileobject, schema=None):
     """Parses a file object
     
     This function parses a KML file object, and optionally validates it against 
     a provided schema.
     """
-    return _parse_internal(fileobject, objectify.parse, schema, parser_options)
+    if schema:
+        # with validation
+        parser = objectify.makeparser(schema = schema.schema, strip_cdata=False)
+        return objectify.parse(fileobject, parser=parser)
+    else:
+        # without validation
+        parser = objectify.makeparser(strip_cdata=False)
+        return objectify.parse(fileobject, parser=parser)
 
 
 def validate_kml():
@@ -121,5 +118,5 @@ def validate_kml():
     except NameError:
         pass #variable was not defined
     else:
-        fileobject.close()
-
+        fileobject.close
+    
